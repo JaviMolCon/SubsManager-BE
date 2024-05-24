@@ -5,6 +5,7 @@ const {
   signUpUser,
   getAllUsers,
   getUser,
+  updateUser,
 } = require("../controllers/userControllers");
 
 const app = express.Router();
@@ -16,8 +17,9 @@ app.post("/login", loginUser);
 app.post("/signup", signUpUser);
 
 // Get users
-app.get("/users", getAllUsers);
+app.get("/all", getAllUsers);
 
-app.route("/:id").get(getUser).put(editUser);
+//Get one User and Update one user
+app.route("/:id").get(getUser).put(updateUser);
 
 module.exports = app;
