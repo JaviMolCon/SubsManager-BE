@@ -6,12 +6,17 @@ const {
   // createManySubscriptions,
   updateSubscription,
   deleteSubscription,
+  getSubscriptionAndUpdateById,
 } = require("../controllers/subscriptionController");
-
+const requireAuth = require("../middlewares/requireAuth");
 const api = express.Router();
 
-api.route("/").get(getAllSubscriptions).post(createSubscription);
-
+api.use(requireAuth);
+api
+  .route("/")
+  .get(getAllSubscriptions)
+  .post(createSubscription)
+  .put(getSubscriptionAndUpdateById);
 api
   .route("/:id")
   .get(getSubscriptionById)

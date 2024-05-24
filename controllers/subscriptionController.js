@@ -29,20 +29,56 @@ const getSubscriptionById = async (req, res) => {
   }
 };
 
+const getSubscriptionAndUpdateById = async (req, res) => {
+  try {
+    // Fetch the subscription
+    const subscription = await Subscription.findById(req.params.id)
+      .populate("owner")
+      .populate("members");
+
+    // If subscription not found, return 404
+    if (!subscription) {
+      return res.status(404).json({ message: "Subscription not found" });
+    }
+
+    // Update the subscription by adding the user to members
+    const updatedSubscription = await Subscription.findByIdAndUpdate(
+      req.params.id,
+      {
+        $addToSet: { members: req.user._id },
+      },
+      { new: true }
+    )
+      .populate("owner")
+      .populate("members");
+
+    // Send the updated subscription as response
+    res.status(200).json(updatedSubscription);
+  } catch (error) {
+    // Handle different types of errors
+    if (error.name === "CastError") {
+      return res.status(400).json({ message: "Invalid subscription ID" });
+    }
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Function to create a new subscription
 const createSubscription = async (req, res) => {
   try {
-    const { owner, category, platformName, plan, members, expirationDate } =
-      req.body; // Destructuring the request body to get subscription details
+    const { category, platformName, plan, members, expirationDate } = req.body; // Destructuring the request body to get subscription details
 
     // creating a new subscription instance with the provided data
     const subscription = await Subscription.create({
-      owner,
+      owner: req.user._id,
       category,
       platformName,
       plan,
       members,
       expirationDate,
+    });
+    await User.findByIdAndUpdate(req.user._id, {
+      $addToSet: { subscriptions: subscription._id },
     });
     res.status(201).json(subscription); // Sending a successful response
   } catch (error) {
@@ -99,4 +135,5 @@ module.exports = {
   updateSubscription,
   deleteSubscription,
   // createManySubscriptions,
+  getSubscriptionAndUpdateById,
 };
