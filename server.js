@@ -21,7 +21,7 @@ app.get("/", (req, res) => {
 app.use(express.urlencoded({ extended: true }));
 app.use("/subscriptions", subscription);
 
-app.use("/user", userRoutes);
+app.use("/users", userRoutes);
 
 app.listen(PORT, () => {
   const boldUrl = `http://localhost:${PORT}`.bold;

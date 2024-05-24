@@ -3,13 +3,13 @@ const Subscription = require("../schemas/Subscription");
 const jwt = require("jsonwebtoken");
 
 const createToken = (_id) => {
-  return jwt.sign({ _id }, process.env.SECRETE, { expiresIn: "1d" });
+  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "1d" });
 };
 
 // login user
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
-  console.log(req.body);
+  //   console.log(req.body);
   try {
     const user = await User.login(email, password);
 
@@ -19,13 +19,14 @@ const loginUser = async (req, res) => {
     res.status(200).json({ email, token });
   } catch (error) {
     res.status(400).json({ error: error.message });
+    console.log("sss");
   }
 };
 
 // sign up user
 const signUpUser = async (req, res) => {
   const { email, password, username } = req.body;
-  console.log(req.body);
+  //   console.log(req.body);
   try {
     const user = await User.signup(email, password, username);
 
@@ -65,4 +66,20 @@ const getUser = async (req, res) => {
   }
 };
 
-module.exports = { loginUser, signUpUser, getAllUsers, getUser };
+//Edit one User
+const updateUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+    console.log("sss");
+  }
+};
+module.exports = { loginUser, signUpUser, getAllUsers, getUser, updateUser };

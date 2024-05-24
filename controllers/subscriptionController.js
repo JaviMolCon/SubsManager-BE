@@ -66,9 +66,8 @@ const updateSubscription = async (req, res) => {
       req.params.id,
       req.body,
       { new: true, runValidators: true }
-    )
-      .populate("owner")
-      .populate("members");
+    );
+
     if (!subscription) {
       return res.status(404).json({ message: "Subscription not found" });
     }
