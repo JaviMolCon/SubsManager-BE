@@ -53,17 +53,15 @@ const getUser = async (req, res) => {
   try {
     const { id } = req.params;
     const user = await User.findById(id)
+      .select("-password")
       .populate("sharedSubscriptions")
       .populate("subscriptions");
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    const newUser = { email: user.email, username: user.username };
-    console.log(newUser);
-    res.json(newUser);
+    res.json(user);
   } catch (error) {
     res.status(400).json({ error: error.message });
-    console.log("Dipali log");
   }
 };
 
