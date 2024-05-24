@@ -18,6 +18,6 @@ app.post("/signup", signUpUser);
 // Get users
 app.get("/users", getAllUsers);
 
-app.get("/:id", getUser);
+app.route("/:id").get(getUser).put(editUser);
 
 module.exports = app;
