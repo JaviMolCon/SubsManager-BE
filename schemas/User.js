@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const userSchema = new mongoose.Schema({
 	email: { type: String, required: true, unique: true },
 	password: { type: String, required: true },
-	username: { type: String },
+	username: { type: String, required: true },
 	profilePic: { type: String },
 	firstName: { type: String },
 	lastName: { type: String },
@@ -39,12 +39,12 @@ userSchema.virtual('profileCompletionScore').get(function () {
 });
 
 // custome validation for username
-// function isValidUsername(username) {
-// 	return (
-// 		validator.isAlphanumeric(username) &&
-// 		validator.isLength(username, { min: 3 })
-// 	);
-// }
+function isValidUsername(username) {
+	return (
+		validator.isAlphanumeric(username) &&
+		validator.isLength(username, { min: 3 })
+	);
+}
 
 // Creating a custom static method for sign up
 userSchema.statics.signup = async function (email, password, username) {
@@ -68,15 +68,15 @@ userSchema.statics.signup = async function (email, password, username) {
 		);
 	}
 
-	// if (!isValidUsername(username)) {
-	// 	throw Error('enter valid username');
-	// }
+	if (!isValidUsername(username)) {
+		throw Error('enter valid username');
+	}
 
 	const salt = await bcrypt.genSalt(10);
 
 	const hash = await bcrypt.hash(password, salt);
 
-	const user = await this.create({ email, password: hash });
+	const user = await this.create({ email, password: hash, username });
 
 	return user;
 };
