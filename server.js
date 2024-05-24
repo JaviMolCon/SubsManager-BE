@@ -3,7 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 require("colors");
 const subscription = require("./routes/subscription");
-const connectDB = require("./dbinit");
+const userRoutes = require("./routes/user");
 
 connectDB();
 
@@ -19,6 +19,8 @@ app.get("/", (req, res) => {
 //form submission
 app.use(express.urlencoded({ extended: true }));
 app.use("/subscriptions", subscription);
+
+app.use("/user", userRoutes);
 
 app.listen(PORT, () => {
   const boldUrl = `http://localhost:${PORT}`.bold;
