@@ -6,10 +6,9 @@ const {
   // createManySubscriptions,
   updateSubscription,
   deleteSubscription,
-} = require("../controllers/subscription");
+} = require("../controllers/subscriptionController");
 
 const api = express.Router();
-
 
 api.route("/").get(getAllSubscriptions).post(createSubscription);
 

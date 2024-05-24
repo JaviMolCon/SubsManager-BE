@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 require("colors");
+const connectDB = require("./dbinit");
 const subscription = require("./routes/subscription");
 const userRoutes = require("./routes/user");
 
