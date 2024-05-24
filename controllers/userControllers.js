@@ -72,7 +72,9 @@ const updateUser = async (req, res) => {
     const user = await User.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
-    });
+    })
+      .populate("sharedSubscriptions")
+      .populate("subscriptions");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
