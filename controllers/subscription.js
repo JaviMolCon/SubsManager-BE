@@ -1,4 +1,5 @@
 const Subscription = require("../schemas/Subscription");
+const User = require("../schemas/User");
 
 // get all subscriptions with populated members
 const getAllSubscriptions = async (req, res) => {

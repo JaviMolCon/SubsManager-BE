@@ -12,6 +12,7 @@ const subscriptionSchema = new mongoose.Schema({
     maxMembers: { type: Number, required: true },
   },
 
+  //* PUT REQ => ...prev, newValue
   //!Needs to use populate() on controller
   //!populate() is only needed when using the .get()
   //! E.g: we need to retrieve all the subs that match a certain criteria. In that case the controller would need to populate the members field.
