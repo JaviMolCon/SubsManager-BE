@@ -11,6 +11,7 @@ const subscriptionSchema = new mongoose.Schema({
     price: { type: Number, required: true },
     maxMembers: { type: Number, required: true },
   },
+  public: { type: Boolean, required: true },
 
   //* PUT REQ => ...prev, newValue
   //!Needs to use populate() on controller

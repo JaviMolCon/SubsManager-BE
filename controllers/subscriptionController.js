@@ -66,7 +66,8 @@ const getSubscriptionAndUpdateById = async (req, res) => {
 // Function to create a new subscription
 const createSubscription = async (req, res) => {
   try {
-    const { category, platformName, plan, members, expirationDate } = req.body; // Destructuring the request body to get subscription details
+    const { category, platformName, plan, members, expirationDate, public } =
+      req.body; // Destructuring the request body to get subscription details
 
     // creating a new subscription instance with the provided data
     const subscription = await Subscription.create({
@@ -76,10 +77,19 @@ const createSubscription = async (req, res) => {
       plan,
       members,
       expirationDate,
+      public,
     });
+
+    if (public) {
+      await User.findByIdAndUpdate(req.user._id, {
+        $addToSet: { sharedSubscriptions: subscription._id },
+      });
+    }
     await User.findByIdAndUpdate(req.user._id, {
       $addToSet: { subscriptions: subscription._id },
     });
+    subscription.members.push(req.user._id);
+    await subscription.save();
     res.status(201).json(subscription); // Sending a successful response
   } catch (error) {
     res.status(500).json({ message: "Error creating subscription", error }); // Sending an error response if something goes wrong
