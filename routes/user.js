@@ -6,6 +6,8 @@ const {
   getAllUsers,
   getUser,
   updateUser,
+  addSub,
+  deleteUser,
 } = require("../controllers/userControllers");
 
 const app = express.Router();
@@ -20,6 +22,6 @@ app.post("/signup", signUpUser);
 app.get("/all", getAllUsers);
 
 //Get one User and Update one user
-app.route("/:id").get(getUser).put(updateUser);
+app.route("/:id").get(getUser).put(updateUser).put(addSub).delete(deleteUser);
 
 module.exports = app;

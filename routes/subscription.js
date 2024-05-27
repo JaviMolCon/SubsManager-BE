@@ -12,11 +12,8 @@ const requireAuth = require("../middlewares/requireAuth");
 const api = express.Router();
 
 api.use(requireAuth);
-api
-  .route("/")
-  .get(getAllSubscriptions)
-  .post(createSubscription)
-  .put(getSubscriptionAndUpdateById);
+api.route("/").get(getAllSubscriptions).post(createSubscription);
+// .put(getSubscriptionAndUpdateById);
 api
   .route("/:id")
   .get(getSubscriptionById)

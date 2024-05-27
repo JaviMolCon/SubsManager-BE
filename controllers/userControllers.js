@@ -75,15 +75,70 @@ const updateUser = async (req, res) => {
       new: true,
       runValidators: true,
     })
+      .select("-password")
       .populate("sharedSubscriptions")
       .populate("subscriptions");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
     res.status(200).json(user);
   } catch (error) {
     res.status(400).json({ error: error.message });
     console.log("sss");
   }
 };
-module.exports = { loginUser, signUpUser, getAllUsers, getUser, updateUser };
+
+const addSub = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Retrieve the user first
+    const user = await User.findById(id)
+      .populate("sharedSubscriptions")
+      .populate("subscriptions");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Ensure req.body.subscriptions is an array
+    if (!Array.isArray(req.body.subscriptions)) {
+      return res
+        .status(400)
+        .json({ error: "Subscriptions should be an array" });
+    }
+
+    // Add new subscriptions to the array
+    user.subscriptions.push(...req.body.subscriptions);
+
+    // Save the updated user document
+    await user.save();
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+//Delete user
+
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findByIdAndDelete(id);
+    res.status(200).json("Deleted Successfully");
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+module.exports = {
+  loginUser,
+  signUpUser,
+  getAllUsers,
+  getUser,
+  updateUser,
+  addSub,
+  deleteUser,
+};

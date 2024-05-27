@@ -29,39 +29,39 @@ const getSubscriptionById = async (req, res) => {
   }
 };
 
-const getSubscriptionAndUpdateById = async (req, res) => {
-  try {
-    // Fetch the subscription
-    const subscription = await Subscription.findById(req.params.id)
-      .populate("owner")
-      .populate("members");
+// const getSubscriptionAndUpdateById = async (req, res) => {
+//   try {
+//     // Fetch the subscription
+//     const subscription = await Subscription.findById(req.params.id)
+//       .populate("owner")
+//       .populate("members");
 
-    // If subscription not found, return 404
-    if (!subscription) {
-      return res.status(404).json({ message: "Subscription not found" });
-    }
+//     // If subscription not found, return 404
+//     if (!subscription) {
+//       return res.status(404).json({ message: "Subscription not found" });
+//     }
 
-    // Update the subscription by adding the user to members
-    const updatedSubscription = await Subscription.findByIdAndUpdate(
-      req.params.id,
-      {
-        $addToSet: { members: req.user._id },
-      },
-      { new: true }
-    )
-      .populate("owner")
-      .populate("members");
+//     // Update the subscription by adding the user to members
+//     const updatedSubscription = await Subscription.findByIdAndUpdate(
+//       req.params.id,
+//       {
+//         $addToSet: { members: req.user._id },
+//       },
+//       { new: true }
+//     )
+//       .populate("owner")
+//       .populate("members");
 
-    // Send the updated subscription as response
-    res.status(200).json(updatedSubscription);
-  } catch (error) {
-    // Handle different types of errors
-    if (error.name === "CastError") {
-      return res.status(400).json({ message: "Invalid subscription ID" });
-    }
-    res.status(500).json({ message: error.message });
-  }
-};
+//     // Send the updated subscription as response
+//     res.status(200).json(updatedSubscription);
+//   } catch (error) {
+//     // Handle different types of errors
+//     if (error.name === "CastError") {
+//       return res.status(400).json({ message: "Invalid subscription ID" });
+//     }
+//     res.status(500).json({ message: error.message });
+//   }
+// };
 
 // Function to create a new subscription
 const createSubscription = async (req, res) => {
@@ -105,25 +105,71 @@ const createSubscription = async (req, res) => {
 //   }
 // };
 
-// update a subscription by ID
+//Update Sub
 const updateSubscription = async (req, res) => {
   try {
-    const subscription = await Subscription.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    )
-      .populate("owner")
-      .populate("members");
+    const { id } = req.params;
+    const subscription = await Subscription.findById(id)
+      .populate("members")
+      .populate("owner");
 
     if (!subscription) {
       return res.status(404).json({ message: "Subscription not found" });
     }
+
+    if (!Array.isArray(req.body.members)) {
+      return res.status(400).json({ error: "Members should be an array" });
+    }
+
+    if (subscription.members.length === subscription.plan.maxMembers) {
+      throw new Error("Max members");
+    } else {
+      // Add new members to the subscription's members array
+      subscription.members.push(...req.body.members);
+    }
+
+    // Save the updated subscription
+    console.log(subscription.members.length);
+    await subscription.save();
+
+    // Update the subscriptions array in each member
+    for (const memberId of req.body.members) {
+      const user = await User.findById(memberId);
+
+      if (user) {
+        // Add the subscription to the user's subscriptions if not already present
+        if (!user.subscriptions.includes(subscription._id)) {
+          user.subscriptions.push(subscription._id);
+          await user.save();
+        }
+      }
+    }
+
     res.status(200).json(subscription);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(400).json({ error: error.message });
   }
 };
+
+// // update a subscription by ID
+// const updateSubscription = async (req, res) => {
+//   try {
+//     const subscription = await Subscription.findByIdAndUpdate(
+//       req.params.id,
+//       req.body,
+//       { new: true, runValidators: true }
+//     )
+//       .populate("owner")
+//       .populate("members");
+
+//     if (!subscription) {
+//       return res.status(404).json({ message: "Subscription not found" });
+//     }
+//     res.status(200).json(subscription);
+//   } catch (error) {
+//     res.status(400).json({ message: error.message });
+//   }
+// };
 
 // delete a subscription by ID
 const deleteSubscription = async (req, res) => {
@@ -145,5 +191,5 @@ module.exports = {
   updateSubscription,
   deleteSubscription,
   // createManySubscriptions,
-  getSubscriptionAndUpdateById,
+  // getSubscriptionAndUpdateById,
 };
