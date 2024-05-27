@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const chatMessageSchema = new mongoose.Schema({
   sender: {
     type: mongoose.Schema.Types.ObjectId,
@@ -18,6 +19,7 @@ const chatMessageSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
+module.exports = mongoose.model("Chat", chatMessageSchema);
 
 //!Chat example
 // const express = require('express');
