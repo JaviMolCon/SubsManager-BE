@@ -8,6 +8,7 @@ const subscriptionSchema = new mongoose.Schema({
   category: { type: String, required: true },
   platformName: { type: String, required: true },
   plan: {
+    planName: { type: String, requierd: true },
     price: { type: Number, required: true },
     maxMembers: { type: Number, required: true },
   },
