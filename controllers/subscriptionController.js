@@ -117,7 +117,9 @@ const findSubsCategory = async (req, res) => {
         .status(400)
         .json({ message: "category query parameter is required" });
     }
-    const subCategory = await Subscription.find({ category: category });
+    const subCategory = await Subscription.find({
+      category: { $regex: category, $options: "i" },
+    });
     res.status(200).json(subCategory);
   } catch (error) {
     res.status(400).json({ error: error.message });
