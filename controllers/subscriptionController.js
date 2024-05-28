@@ -29,40 +29,6 @@ const getSubscriptionById = async (req, res) => {
   }
 };
 
-// const getSubscriptionAndUpdateById = async (req, res) => {
-//   try {
-//     // Fetch the subscription
-//     const subscription = await Subscription.findById(req.params.id)
-//       .populate("owner")
-//       .populate("members");
-
-//     // If subscription not found, return 404
-//     if (!subscription) {
-//       return res.status(404).json({ message: "Subscription not found" });
-//     }
-
-//     // Update the subscription by adding the user to members
-//     const updatedSubscription = await Subscription.findByIdAndUpdate(
-//       req.params.id,
-//       {
-//         $addToSet: { members: req.user._id },
-//       },
-//       { new: true }
-//     )
-//       .populate("owner")
-//       .populate("members");
-
-//     // Send the updated subscription as response
-//     res.status(200).json(updatedSubscription);
-//   } catch (error) {
-//     // Handle different types of errors
-//     if (error.name === "CastError") {
-//       return res.status(400).json({ message: "Invalid subscription ID" });
-//     }
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
 // Function to create a new subscription
 const createSubscription = async (req, res) => {
   try {
@@ -95,15 +61,6 @@ const createSubscription = async (req, res) => {
     res.status(500).json({ message: "Error creating subscription", error }); // Sending an error response if something goes wrong
   }
 };
-// function to create subscriptions
-// const createManySubscriptions = async (req, res) => {
-//   try {
-//     const subscription = await Subscription.create(req.body);
-//     res.status(201).json(subscription);
-//   } catch (error) {
-//     res.status(500).json(error);
-//   }
-// };
 
 //Update Sub
 const updateSubscription = async (req, res) => {
@@ -154,13 +111,13 @@ const updateSubscription = async (req, res) => {
 //Find Subscription by category
 const findSubsCategory = async (req, res) => {
   try {
-    const { name } = req.query;
-    if (!name) {
+    const { category } = req.query;
+    if (!category) {
       return res
         .status(400)
         .json({ message: "category query parameter is required" });
     }
-    const subCategory = await Subscription.find({ category: name });
+    const subCategory = await Subscription.find({ category: category });
     res.status(200).json(subCategory);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -187,6 +144,4 @@ module.exports = {
   updateSubscription,
   deleteSubscription,
   findSubsCategory,
-  // createManySubscriptions,
-  // getSubscriptionAndUpdateById,
 };

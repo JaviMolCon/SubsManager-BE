@@ -11,13 +11,20 @@ const requireAuth = require("../middlewares/requireAuth");
 const api = express.Router();
 
 api.use(requireAuth);
-api
-  .route("/")
-  .get(findSubsCategory, getAllSubscriptions)
-  .post(createSubscription);
-// .get(findSubsCategory);
+api.get("/", (req, res, next) => {
+  const { category } = req.query;
 
-// api.route("/").get(findSubsCategory);
+  if (category) {
+    // If category is provided, invoke findSubsCategory middleware
+    return findSubsCategory(req, res);
+  } else {
+    // If category is not provided, invoke getAllSubscriptions middleware
+    return getAllSubscriptions(req, res);
+  }
+});
+
+// Define route handlers for POST requests to '/'
+api.post("/", createSubscription);
 api
   .route("/:id")
   .get(getSubscriptionById)
