@@ -7,6 +7,7 @@ require("colors");
 const connectDB = require("./dbinit");
 const subscription = require("./routes/subscription");
 const userRoutes = require("./routes/user");
+const contactRoutes = require("./routes/contact");
 const chatMessageRoutes = require("./routes/chatMessage");
 const { saveMessage } = require("./controllers/chatMessageController");
 
@@ -32,6 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/subscriptions", subscription);
 app.use("/users", userRoutes);
 app.use("/chat", chatMessageRoutes); // Mount chat message routes
+app.use("/contact", contactRoutes);
 
 // Socket.io connection handling
 io.on("connection", (socket) => {
