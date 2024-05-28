@@ -68,6 +68,12 @@ const getUser = async (req, res) => {
   }
 };
 
+//Filtering User
+const getUserSubs = async (req, res) => {
+  try {
+  } catch (error) {}
+};
+
 //Edit one User
 const updateUser = async (req, res) => {
   try {
