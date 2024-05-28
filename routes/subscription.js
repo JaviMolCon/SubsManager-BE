@@ -10,7 +10,6 @@ const {
 const requireAuth = require("../middlewares/requireAuth");
 const api = express.Router();
 
-api.use(requireAuth);
 api.get("/", (req, res, next) => {
   const { category } = req.query;
 
@@ -22,6 +21,8 @@ api.get("/", (req, res, next) => {
     return getAllSubscriptions(req, res);
   }
 });
+
+api.use(requireAuth);
 
 // Define route handlers for POST requests to '/'
 api.post("/", createSubscription);

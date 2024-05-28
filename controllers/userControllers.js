@@ -68,7 +68,6 @@ const getUser = async (req, res) => {
   }
 };
 
-//Filtering User
 const getUserSubs = async (req, res) => {
   const { platformName } = req.query;
 
@@ -79,9 +78,9 @@ const getUserSubs = async (req, res) => {
   }
 
   try {
-    // Step 1: Find the Subscription documents that match the platformName
+    // Step 1: Find the Subscription documents that match the platformName (case-insensitive)
     const subscriptions = await Subscription.find({
-      platformName: platformName,
+      platformName: { $regex: platformName, $options: "i" },
     });
 
     if (subscriptions.length === 0) {
@@ -100,7 +99,9 @@ const getUserSubs = async (req, res) => {
       .select("-password")
       .populate({
         path: "sharedSubscriptions",
-        match: { platformName: platformName }, // Only populate matching subscriptions
+        match: {
+          platformName: { $regex: platformName, $options: "i" },
+        }, // Only populate matching subscriptions
       });
 
     if (users.length === 0) {
