@@ -8,6 +8,7 @@ const {
   updateUser,
   addSub,
   deleteUser,
+  getUserSubs,
 } = require("../controllers/userControllers");
 
 const app = express.Router();
@@ -18,8 +19,11 @@ app.post("/login", loginUser);
 // signup
 app.post("/signup", signUpUser);
 
-// Get users
-app.get("/all", getAllUsers);
+//Filter users with platformName
+app.route("/").get(getUserSubs);
+
+// Get all users
+app.route("/all").get(getAllUsers);
 
 //Get one User and Update one user
 app.route("/:id").get(getUser).put(updateUser).put(addSub).delete(deleteUser);

@@ -70,8 +70,54 @@ const getUser = async (req, res) => {
 
 //Filtering User
 const getUserSubs = async (req, res) => {
+  const { platformName } = req.query;
+
+  if (!platformName) {
+    return res
+      .status(400)
+      .json({ message: "platformName query parameter is required" });
+  }
+
   try {
-  } catch (error) {}
+    // Step 1: Find the Subscription documents that match the platformName
+    const subscriptions = await Subscription.find({
+      platformName: platformName,
+    });
+
+    if (subscriptions.length === 0) {
+      return res.status(404).json({
+        message: "No subscriptions found with the specified platform name",
+      });
+    }
+
+    // Extract the subscription IDs
+    const subscriptionIds = subscriptions.map((sub) => sub._id);
+
+    // Step 2: Find the User documents that reference these Subscription documents in their sharedSubscriptions array
+    const users = await User.find({
+      sharedSubscriptions: { $in: subscriptionIds },
+    })
+      .select("-password")
+      .populate({
+        path: "sharedSubscriptions",
+        match: { platformName: platformName }, // Only populate matching subscriptions
+      });
+
+    if (users.length === 0) {
+      return res.status(404).json({
+        message:
+          "No users found with the specified platform name in shared subscriptions",
+      });
+    }
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error(
+      "Error finding users with shared subscription platform:",
+      error
+    );
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 //Edit one User
@@ -147,4 +193,5 @@ module.exports = {
   updateUser,
   addSub,
   deleteUser,
+  getUserSubs,
 };

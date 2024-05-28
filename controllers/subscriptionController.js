@@ -151,25 +151,21 @@ const updateSubscription = async (req, res) => {
   }
 };
 
-// // update a subscription by ID
-// const updateSubscription = async (req, res) => {
-//   try {
-//     const subscription = await Subscription.findByIdAndUpdate(
-//       req.params.id,
-//       req.body,
-//       { new: true, runValidators: true }
-//     )
-//       .populate("owner")
-//       .populate("members");
-
-//     if (!subscription) {
-//       return res.status(404).json({ message: "Subscription not found" });
-//     }
-//     res.status(200).json(subscription);
-//   } catch (error) {
-//     res.status(400).json({ message: error.message });
-//   }
-// };
+//Find Subscription by category
+const findSubsCategory = async (req, res) => {
+  try {
+    const { name } = req.query;
+    if (!name) {
+      return res
+        .status(400)
+        .json({ message: "category query parameter is required" });
+    }
+    const subCategory = await Subscription.find({ category: name });
+    res.status(200).json(subCategory);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
 // delete a subscription by ID
 const deleteSubscription = async (req, res) => {
@@ -190,6 +186,7 @@ module.exports = {
   createSubscription,
   updateSubscription,
   deleteSubscription,
+  findSubsCategory,
   // createManySubscriptions,
   // getSubscriptionAndUpdateById,
 };
