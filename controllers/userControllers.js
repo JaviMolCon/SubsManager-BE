@@ -2,8 +2,8 @@ const User = require("../schemas/User");
 const Subscription = require("../schemas/Subscription");
 const jwt = require("jsonwebtoken");
 
-const createToken = (_id) => {
-  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "1d" });
+const createToken = (_id, username) => {
+  return jwt.sign({ _id, username }, process.env.SECRET, { expiresIn: "1d" });
 };
 
 // login user
@@ -14,7 +14,7 @@ const loginUser = async (req, res) => {
     const user = await User.login(email, password);
 
     // create token
-    const token = createToken(user._id);
+    const token = createToken(user._id, user.username);
 
     res.status(200).json({ email, token, userId: user._id });
   } catch (error) {
@@ -31,7 +31,7 @@ const signUpUser = async (req, res) => {
     const user = await User.signup(email, password, username);
 
     // create token
-    const token = createToken(user._id);
+    const token = createToken(user._id, user.username);
 
     res.status(200).json({ email, token, userId: user._id });
   } catch (error) {
