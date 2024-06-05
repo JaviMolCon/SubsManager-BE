@@ -2,8 +2,10 @@ const User = require("../schemas/User");
 const Subscription = require("../schemas/Subscription");
 const jwt = require("jsonwebtoken");
 
-const createToken = (_id, username) => {
-  return jwt.sign({ _id, username }, process.env.SECRET, { expiresIn: "1d" });
+const createToken = (_id, username, profilePic, email) => {
+  return jwt.sign({ _id, username, profilePic, email }, process.env.SECRET, {
+    expiresIn: "1d",
+  });
 };
 
 // login user
@@ -14,9 +16,20 @@ const loginUser = async (req, res) => {
     const user = await User.login(email, password);
 
     // create token
-    const token = createToken(user._id, user.username);
+    const token = createToken(
+      user._id,
+      user.username,
+      user.profilePic,
+      user.email
+    );
 
-    res.status(200).json({ email, token, userId: user._id });
+    res.status(200).json({
+      email,
+      token,
+      userId: user._id,
+      profilePic: user.profilePic,
+    });
+    // console.log(user.profilePic);
   } catch (error) {
     res.status(400).json({ error: error.message });
     console.log("sss");
@@ -186,6 +199,33 @@ const deleteUser = async (req, res) => {
   }
 };
 
+//*update profiePic
+const updateProfilePic = async (req, res) => {
+  try {
+    const { id } = req.params;
+    // console.log("User ID:", id);
+    // console.log("Uploaded File:", req.file);
+    if (!req.file || !req.file.path) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+    const user = await User.findByIdAndUpdate(
+      id,
+      {
+        profilePic: req.file.path,
+      },
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 module.exports = {
   loginUser,
   signUpUser,
@@ -195,4 +235,5 @@ module.exports = {
   addSub,
   deleteUser,
   getUserSubs,
+  updateProfilePic,
 };
