@@ -2,21 +2,29 @@ const ChatMessage = require("../schemas/Chat");
 const User = require("../schemas/User");
 
 // Function to retrieve messages between two users
-const createMessage = async (req, res) => {
+
+const createMessage = async (data) => {
+  console.log("Saving message:", data); // Log the message data
+  const { sender, receiver, message, timestamp } = data;
+
+  // Convert timestamp to a Date object if it's a string
+  const timestampDate = new Date(timestamp);
   try {
-    const { senderId, receiverId, message } = req.body;
     const chatMessage = new ChatMessage({
-      sender: senderId,
-      receiver: receiverId,
+      sender,
+      receiver,
       message,
+      timestamp: timestampDate,
     });
-    await chatMessage.save();
-    res.status(201).json(chatMessage);
+    const savedMessage = await chatMessage.save();
+    console.log("Message saved:", savedMessage); // Log the saved message
+    return savedMessage;
   } catch (error) {
-    console.error("Error creating message:", error);
-    res.status(500).send("Server Error");
+    console.error("Error saving message:", error);
+    throw error;
   }
 };
+
 // Function to retrieve messages between two users
 const getMessages = async (req, res) => {
   try {

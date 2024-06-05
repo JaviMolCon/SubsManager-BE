@@ -9,13 +9,18 @@ const subscription = require("./routes/subscription");
 const userRoutes = require("./routes/user");
 const contactRoutes = require("./routes/contact");
 const chatMessageRoutes = require("./routes/chatMessage");
-const { saveMessage } = require("./controllers/chatMessageController");
+const { createMessage } = require("./controllers/chatMessageController");
 
 connectDB();
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = socketIo(server, {
+  cors: {
+    origin: "http://localhost:5173", // React app URL
+    methods: ["GET", "POST"],
+  },
+});
 
 const PORT = process.env.PORT || 8080;
 
@@ -40,9 +45,11 @@ io.on("connection", (socket) => {
   console.log("A user connected");
 
   socket.on("sendMessage", async (data) => {
+    console.log("Received message:", data); // Log received message
     try {
-      const chatMessage = await saveMessage(data);
-      io.emit("receiveMessage", chatMessage); // Broadcast the message to all connected clients
+      const chatMessage = await createMessage(data);
+      console.log("Emitting message:", chatMessage); // Log the emitted message
+      io.emit("receiveMessage", chatMessage);
     } catch (error) {
       console.error("Error saving message:", error);
     }
