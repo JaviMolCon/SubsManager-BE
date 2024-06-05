@@ -203,15 +203,20 @@ const deleteUser = async (req, res) => {
 const updateProfilePic = async (req, res) => {
   try {
     const { id } = req.params;
-    // console.log("User ID:", id);
-    // console.log("Uploaded File:", req.file);
-    if (!req.file || !req.file.path) {
-      return res.status(400).json({ error: "No file uploaded" });
+    let profilePic;
+
+    if (req.file && req.file.path) {
+      profilePic = req.file.path;
+    } else if (req.body.avatarUrl) {
+      profilePic = req.body.avatarUrl;
+    } else {
+      return res.status(400).json({ error: "No file or avatar URL provided" });
     }
+
     const user = await User.findByIdAndUpdate(
       id,
       {
-        profilePic: req.file.path,
+        profilePic: profilePic,
       },
       { new: true, runValidators: true }
     ).select("-password");
@@ -225,7 +230,6 @@ const updateProfilePic = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-
 module.exports = {
   loginUser,
   signUpUser,
