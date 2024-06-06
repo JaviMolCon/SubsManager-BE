@@ -1,4 +1,5 @@
 const express = require("express");
+const upload = require("../services/upload");
 
 const {
   loginUser,
@@ -9,6 +10,7 @@ const {
   addSub,
   deleteUser,
   getUserSubs,
+  uploadImage,
 } = require("../controllers/userControllers");
 
 const app = express.Router();
@@ -28,6 +30,8 @@ app.get("/all", async (req, res) => {
     return getAllUsers(req, res);
   }
 });
+
+app.post("/upload/:id", upload.single("url"), uploadImage);
 
 //Get one User and Update one user
 app.route("/:id").get(getUser).put(updateUser).put(addSub).delete(deleteUser);
