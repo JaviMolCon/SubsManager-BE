@@ -4,6 +4,7 @@ const Subscription = require('../schemas/Subscription');
 
 // Function to retrieve messages between two users
 const createMessage = async (req, res) => {
+	console.log(req.body);
 	try {
 		const { senderId, receiverId, message, conversation } = req.body;
 		const chatMessage = new ChatMessage({
@@ -19,23 +20,8 @@ const createMessage = async (req, res) => {
 		res.status(500).send('Server Error');
 	}
 };
-// Function to retrieve messages between two users
-// const getMessages = async (req, res) => {
-//   try {
-//     const { senderId, receiverId } = req.query;
-//     const messages = await ChatMessage.find({
-//       $or: [
-//         { sender: senderId, receiver: receiverId },
-//         { sender: receiverId, receiver: senderId },
-//       ],
-//     }).sort({ timestamp: 1 });
-//     res.json(messages);
-//   } catch (error) {
-//     console.error("Error retrieving messages:", error);
-//     res.status(500).send("Server Error");
-//   }
-// };
 
+// to get all messages
 const getMessages = async (req, res) => {
 	try {
 		const { userId } = req.query;
