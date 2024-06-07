@@ -19,7 +19,7 @@ const loginUser = async (req, res) => {
     const token = createToken(
       user._id,
       user.username,
-      user.profilePic,
+      user.profilePic.url,
       user.email
     );
 
@@ -27,9 +27,9 @@ const loginUser = async (req, res) => {
       email,
       token,
       userId: user._id,
-      profilePic: user.profilePic,
+      profilePic: user.profilePic.url,
     });
-    // console.log(user.profilePic);
+    console.log(user.profilePic);
   } catch (error) {
     res.status(400).json({ error: error.message });
     console.log("sss");
@@ -248,5 +248,5 @@ module.exports = {
   addSub,
   deleteUser,
   getUserSubs,
- uploadImage,
+  uploadImage,
 };

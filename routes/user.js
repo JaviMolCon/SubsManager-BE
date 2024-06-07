@@ -33,9 +33,8 @@ app.get("/all", async (req, res) => {
 
 app.post("/upload/:id", upload.single("url"), uploadImage);
 
-//Get one User and Update one user
+//Get one User and Update one usery
 app.route("/:id").get(getUser).put(updateUser).put(addSub).delete(deleteUser);
 
 //*update Profile Picture
-app.put("/:id/profilePic", upload.single("picture"), updateProfilePic);
 module.exports = app;
