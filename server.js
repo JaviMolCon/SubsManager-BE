@@ -49,11 +49,11 @@ io.on('connection', (socket) => {
 	console.log('A user connected');
 
 	socket.on('sendMessage', async (data) => {
-		console.log('Received message:', data); // Log received message
+		// console.log('Received message:', data); // Log received message
 		try {
 			const chatMessage = await createNewMessage(data);
-			console.log('Emitting message:', chatMessage); // Log the emitted message
-			io.emit('receiveMessage', chatMessage);
+			// console.log('Emitting message:', data); // Log the emitted message
+			io.emit('receiveMessage', data);
 		} catch (error) {
 			console.error('Error saving message:', error);
 		}
@@ -66,11 +66,11 @@ io.on('connection', (socket) => {
 
 // Function to create new messages between two users
 const createNewMessage = async (data) => {
-	console.log('my data is:', data);
+	// console.log('my data is:', data);
 	try {
 		const chatMessage = new ChatMessage({
-			sender: data.senderId,
-			receiver: data.receiverId,
+			sender: data.sender,
+			receiver: data.receiver,
 			message: data.message,
 			conversation: data.conversation,
 			timestamp: data.timestamp,
