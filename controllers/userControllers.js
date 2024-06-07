@@ -67,6 +67,7 @@ const getAllUsers = async (req, res) => {
 // Get one User
 const getUser = async (req, res) => {
   try {
+    console.log("gettingTheUser");
     const { id } = req.params;
     const user = await User.findById(id)
       .select("-password")
@@ -75,6 +76,7 @@ const getUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
+    console.log(user);
     res.json(user);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -199,34 +201,45 @@ const deleteUser = async (req, res) => {
   }
 };
 
-//*update profiePic
-const updateProfilePic = async (req, res) => {
+//upload image
+
+const uploadImage = async (req, res) => {
   try {
-    const { id } = req.params;
-    // console.log("User ID:", id);
-    // console.log("Uploaded File:", req.file);
-    if (!req.file || !req.file.path) {
-      return res.status(400).json({ error: "No file uploaded" });
-    }
-    const user = await User.findByIdAndUpdate(
-      id,
-      {
-        profilePic: req.file.path,
-      },
-      { new: true, runValidators: true }
-    ).select("-password");
+    // Check if the request contains a file
+    if (req.file && req.file.path) {
+      // Find the user by ID
+      const userId = req.params.id; // Assuming you're passing the userId in the URL
+      const user = await User.findById(userId);
 
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
+      // If user not found, return an error
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
 
-    res.status(200).json(user);
+      // Update the profilePic field of the user
+      user.profilePic = {
+        url: req.file.path,
+        description: req.body.desc,
+      };
+
+      // Save the updated user
+      await user.save();
+
+      return res
+        .status(200)
+        .json({ msg: "Profile picture successfully updated" });
+    } else {
+      // If no file is provided, return an error
+      return res.status(422).json({ error: "No image provided" });
+    }
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
 module.exports = {
+  uploadImage,
   loginUser,
   signUpUser,
   getAllUsers,
@@ -235,5 +248,5 @@ module.exports = {
   addSub,
   deleteUser,
   getUserSubs,
-  updateProfilePic,
+ uploadImage,
 };
