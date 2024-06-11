@@ -8,14 +8,23 @@ const connectDB = require("./dbinit");
 const subscription = require("./routes/subscription");
 const userRoutes = require("./routes/user");
 const contactRoutes = require("./routes/contact");
-const chatMessageRoutes = require("./routes/chatMessage");
-const { saveMessage } = require("./controllers/chatMessageController");
 
+const chatMessageRoutes = require("./routes/chatMessage");
+const { createMessage } = require("./controllers/chatMessageController");
+const Conversation = require("./schemas/Conversation");
+const conversationRoute = require("./routes/conversation");
+const ChatMessage = require("./schemas/Chat");
+const { timeStamp } = require("console");
 connectDB();
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = socketIo(server, {
+  cors: {
+    origin: "https://subsmanager.netlify.app", // React app URL
+    methods: ["GET", "POST"],
+  },
+});
 
 const PORT = process.env.PORT || 8080;
 
@@ -34,15 +43,18 @@ app.use("/subscriptions", subscription);
 app.use("/users", userRoutes);
 app.use("/chat", chatMessageRoutes); // Mount chat message routes
 app.use("/contact", contactRoutes);
+app.use("/conversation", conversationRoute); // Mount chat message routes
 
 // Socket.io connection handling
 io.on("connection", (socket) => {
   console.log("A user connected");
 
   socket.on("sendMessage", async (data) => {
+    // console.log('Received message:', data); // Log received message
     try {
-      const chatMessage = await saveMessage(data);
-      io.emit("receiveMessage", chatMessage); // Broadcast the message to all connected clients
+      const chatMessage = await createNewMessage(data);
+      // console.log('Emitting message:', data); // Log the emitted message
+      io.emit("receiveMessage", data);
     } catch (error) {
       console.error("Error saving message:", error);
     }
@@ -52,6 +64,23 @@ io.on("connection", (socket) => {
     console.log("A user disconnected");
   });
 });
+
+// Function to create new messages between two users
+const createNewMessage = async (data) => {
+  // console.log('my data is:', data);
+  try {
+    const chatMessage = new ChatMessage({
+      sender: data.sender,
+      receiver: data.receiver,
+      message: data.message,
+      conversation: data.conversation,
+      timestamp: data.timestamp,
+    });
+    await chatMessage.save();
+  } catch (error) {
+    console.error("Error creating message:", error);
+  }
+};
 
 server.listen(PORT, () => {
   const boldUrl = `http://localhost:${PORT}`.bold;
