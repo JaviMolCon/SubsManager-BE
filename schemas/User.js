@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
   firstName: { type: String },
   lastName: { type: String },
   country: { type: String },
+  countryCode: { type: String },
   sharedSubscriptions: [
     {
       type: mongoose.Schema.Types.ObjectId,
