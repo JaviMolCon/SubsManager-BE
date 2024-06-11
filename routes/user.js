@@ -36,6 +36,4 @@ app.post("/upload/:id", upload.single("url"), uploadImage);
 //Get one User and Update one user
 app.route("/:id").get(getUser).put(updateUser).put(addSub).delete(deleteUser);
 
-//*update Profile Picture
-app.put("/:id/profilePic", upload.single("picture"), updateProfilePic);
 module.exports = app;

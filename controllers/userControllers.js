@@ -248,5 +248,5 @@ module.exports = {
   addSub,
   deleteUser,
   getUserSubs,
- uploadImage,
+  uploadImage,
 };
