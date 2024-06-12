@@ -21,7 +21,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "https://subsmanager.netlify.app", // React app URL
+    origin: "https://x-share.netlify.app", // React app URL
     methods: ["GET", "POST"],
   },
 });
